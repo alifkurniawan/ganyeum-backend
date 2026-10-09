@@ -20,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/exchange")
     public ResponseEntity<TokenResponse> exchangeToken(@RequestBody TokenExchangeRequest request) {
-        TokenResponse response = null;
+        TokenResponse response;
         try {
             response = authService.exchangeToken(request.idToken());
         } catch (InvalidFirebaseTokenException e) {
