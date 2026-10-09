@@ -1,4 +1,9 @@
 spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    flyway:
+      enabled: true
   application:
     name: backend
   datasource:

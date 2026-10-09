@@ -11,7 +11,7 @@ public class FirebaseTokenService {
         try {
             return FirebaseAuth.getInstance().verifyIdToken(idToken);
         } catch (Exception e) {
-            throw new InvalidFirebaseTokenException();
+            throw new InvalidFirebaseTokenException(e.getMessage());
         }
     }
 }

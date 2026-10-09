@@ -25,10 +25,6 @@ public class Item extends BaseModel {
 
     private String uid;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="item_id")
-    private List<Image> images;
-
     private String itemName;
     private BigInteger sellingPrice;
     private BigInteger initialPrice;

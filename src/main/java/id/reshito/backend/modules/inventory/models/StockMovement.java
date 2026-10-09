@@ -3,7 +3,6 @@ package id.reshito.backend.modules.inventory.models;
 import id.reshito.backend.common.util.BaseModel;
 import id.reshito.backend.modules.item.model.Item;
 import id.reshito.backend.modules.inventory.StockMovementType;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,11 +23,11 @@ public class StockMovement extends BaseModel {
     private Item item;
 
     private int quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private StockMovementType stockMovementType;
 
-    @Nullable
     private String reverenceType;
-
-    @Nullable
     private String referenceId;
 }
