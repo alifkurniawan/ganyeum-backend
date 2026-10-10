@@ -9,6 +9,6 @@ public record ItemResponse(
         String itemName,
         BigInteger sellingPrice,
         BigInteger initialPrice,
-        Integer quantity
+        Long quantity
 ) {
 }

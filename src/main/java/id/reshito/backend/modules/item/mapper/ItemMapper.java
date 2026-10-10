@@ -14,7 +14,7 @@ public class ItemMapper {
                 item.getItemName(),
                 item.getSellingPrice(),
                 item.getInitialPrice(),
-                quantity
+                quantity.longValue()
         );
     }
 }
