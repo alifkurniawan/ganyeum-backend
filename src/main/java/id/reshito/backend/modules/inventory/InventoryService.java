@@ -49,4 +49,8 @@ public class InventoryService {
         this.stockMovementRepository.save(stockMovement);
         return inventory;
     }
+
+    public Inventory getInventory(Item item) {
+        return inventoryRepository.findByItemId(item.getId()).orElseThrow();
+    }
 }

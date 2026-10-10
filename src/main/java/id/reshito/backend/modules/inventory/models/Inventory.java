@@ -5,6 +5,8 @@ import id.reshito.backend.modules.item.model.Item;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "inventories")
 @Builder
@@ -14,8 +16,8 @@ import lombok.*;
 @Setter
 public class Inventory extends BaseModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", nullable = false)
