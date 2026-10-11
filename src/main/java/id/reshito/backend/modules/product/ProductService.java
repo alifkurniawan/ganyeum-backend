@@ -12,6 +12,7 @@ import id.reshito.backend.modules.product.dto.ProductUpdateRequest;
 import id.reshito.backend.modules.product.mapper.ProductMapper;
 import id.reshito.backend.modules.product.model.Product;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -73,5 +74,18 @@ public class ProductService {
         product.setActive(false);
         product.setDeletedAt(Instant.now());
         productRepository.save(product);
+    }
+
+    public ListResponse getProductsBySeller(UUID sellerId, @Valid GetRequest request) {
+        var result = productRepository.findProductByProductNameAndSellerIdWithQuantity(
+                sellerId, request.query(),
+                PageRequest.of(
+                        request.page() - 1,
+                        request.size(),
+                        Sort.by(request.sortBy()).ascending()
+                )
+        );
+
+        return listMapper.toResponse(request.page(), result);
     }
 }

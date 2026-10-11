@@ -20,6 +20,7 @@ import java.util.UUID;
 @RequestMapping(name="Item", path ="/api/products")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
+@PreAuthorize("hasRole('SELLER')")
 public class ProductController {
     private final ProductService productService;
 
