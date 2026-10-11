@@ -4,6 +4,7 @@ package id.reshito.backend.modules.item;
 import id.reshito.backend.common.dto.GetRequest;
 import id.reshito.backend.common.dto.ListResponse;
 import id.reshito.backend.common.exception.NotFoundException;
+import id.reshito.backend.common.mapper.ListMapper;
 import id.reshito.backend.modules.inventory.InventoryService;
 import id.reshito.backend.modules.item.dto.ItemRequest;
 import id.reshito.backend.modules.item.dto.ItemResponse;
@@ -25,6 +26,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final InventoryService inventoryService;
     private final ItemMapper itemMapper;
+    private final ListMapper listMapper;
 
     @Transactional
     public ItemResponse addItem(String uid, ItemRequest request) {
@@ -49,13 +51,8 @@ public class ItemService {
                         Sort.by(request.sortBy()).ascending()
                 )
         );
-        return new ListResponse(
-                result.getContent(),
-                request.page(),
-                result.getTotalPages(),
-                result.getTotalElements()
 
-        );
+        return listMapper.toResponse(request.page(), result);
     }
 
 

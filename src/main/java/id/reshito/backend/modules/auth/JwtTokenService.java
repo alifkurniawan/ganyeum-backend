@@ -1,6 +1,7 @@
 package id.reshito.backend.modules.auth;
 
 import id.reshito.backend.modules.auth.dto.TokenResponse;
+import id.reshito.backend.modules.user.RoleEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -10,6 +11,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class JwtTokenService {
@@ -27,10 +30,11 @@ public class JwtTokenService {
         this.ttlSeconds = ttlSeconds;
     }
 
-    public String generateToken(String userId, Instant expiredAt) {
+    public String generateToken(String userId, Instant expiredAt, List<RoleEnum> roles) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(this.issuer)
                 .subject(userId)
+                .claim("roles", roles)
                 .issuedAt(expiredAt.minusSeconds(this.ttlSeconds))
                 .expiresAt(expiredAt)
                 .build();
@@ -43,15 +47,13 @@ public class JwtTokenService {
     }
 
 
-    public TokenResponse createAccessToken(String userId) {
+    public TokenResponse createAccessToken(String userId, List<RoleEnum> roles) {
         Instant now = Instant.now();
         var expiredAt = now.plusSeconds(this.ttlSeconds);
         var expiredRefreshToken = now.plusSeconds(this.ttlSeconds * 5);
-        var accessToken = this.generateToken(userId, expiredAt);
-        var refreshToken = this.generateToken(userId, expiredRefreshToken);
+        var accessToken = this.generateToken(userId, expiredAt, roles);
         return new TokenResponse(
                 accessToken,
-                refreshToken,
                 "Bearer",
                 expiredAt.toEpochMilli()
         );
