@@ -2,7 +2,7 @@ package id.reshito.backend.modules.inventory;
 
 import id.reshito.backend.modules.inventory.models.Inventory;
 import id.reshito.backend.modules.inventory.models.StockMovement;
-import id.reshito.backend.modules.item.model.Item;
+import id.reshito.backend.modules.product.model.Product;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,26 +14,26 @@ public class InventoryService {
     private final StockMovementRepository stockMovementRepository;
 
     @Transactional
-    public Inventory addInventory(Item item, Integer quantity) {
+    public Inventory addInventory(Product product, Integer quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
-        return this.updateInventory(item, quantity, StockMovementType.STOCK_IN);
+        return this.updateInventory(product, quantity, StockMovementType.STOCK_IN);
     }
 
     @Transactional
-    public Inventory decreaseInventory(Item item, Integer quantity) {
+    public Inventory decreaseInventory(Product product, Integer quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greather than zero");
         }
-        return this.updateInventory(item, quantity*(-1), StockMovementType.SALE);
+        return this.updateInventory(product, quantity*(-1), StockMovementType.SALE);
     }
 
-    private Inventory updateInventory(Item item, Integer quantity, StockMovementType type) {
+    private Inventory updateInventory(Product product, Integer quantity, StockMovementType type) {
         Inventory inventory = inventoryRepository
-                .findByItemId(item.getId())
+                .findByProductId(product.getId())
                 .orElseGet(() -> Inventory.builder()
-                        .item(item)
+                        .product(product)
                         .quantity(0)
                         .build()
                 );
@@ -41,7 +41,7 @@ public class InventoryService {
         inventoryRepository.save(inventory);
 
         StockMovement stockMovement = StockMovement.builder()
-                .item(item)
+                .product(product)
                 .quantity(quantity)
                 .stockMovementType(type)
                 .build();
@@ -50,7 +50,7 @@ public class InventoryService {
         return inventory;
     }
 
-    public Inventory getInventory(Item item) {
-        return inventoryRepository.findByItemId(item.getId()).orElseThrow();
+    public Inventory getInventory(Product product) {
+        return inventoryRepository.findByProductId(product.getId()).orElseThrow();
     }
 }

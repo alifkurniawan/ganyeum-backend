@@ -1,4 +1,4 @@
-package id.reshito.backend.modules.item.model;
+package id.reshito.backend.modules.product.model;
 
 
 import id.reshito.backend.common.util.BaseModel;
@@ -17,22 +17,22 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(
-        name = "items",
-        indexes = {@Index(name="idx_items_uid_item_name", columnList = "uid, item_name")}
+        name = "products",
+        indexes = {@Index(name="idx_products_uid_item_name", columnList = "uid, product_name")}
 )
-public class Item extends BaseModel {
+public class Product extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String uid;
 
-    private String itemName;
+    private String productName;
     private BigInteger sellingPrice;
     private BigInteger initialPrice;
 
     @OneToMany(
-            mappedBy = "item",
+            mappedBy = "product",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true

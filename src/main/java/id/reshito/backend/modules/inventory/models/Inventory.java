@@ -1,7 +1,7 @@
 package id.reshito.backend.modules.inventory.models;
 
 import id.reshito.backend.common.util.BaseModel;
-import id.reshito.backend.modules.item.model.Item;
+import id.reshito.backend.modules.product.model.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,8 +20,8 @@ public class Inventory extends BaseModel {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     private Integer quantity;
 

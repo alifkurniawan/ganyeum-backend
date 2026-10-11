@@ -1,12 +1,12 @@
-package id.reshito.backend.modules.item.dto;
+package id.reshito.backend.modules.product.dto;
 
 import java.math.BigInteger;
 import java.util.UUID;
 
 
-public record ItemResponse(
+public record ProductResponse(
         UUID id,
-        String itemName,
+        String productName,
         BigInteger sellingPrice,
         BigInteger initialPrice,
         Long quantity

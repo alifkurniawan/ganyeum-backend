@@ -2,7 +2,6 @@ package id.reshito.backend.modules.user;
 
 import id.reshito.backend.modules.user.dto.UserEditRequest;
 import id.reshito.backend.modules.user.dto.UserMapping;
-import id.reshito.backend.modules.user.dto.UserRequest;
 import id.reshito.backend.modules.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
