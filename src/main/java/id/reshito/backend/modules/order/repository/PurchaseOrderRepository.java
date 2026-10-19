@@ -17,20 +17,20 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, UU
     @Query(value = """
             select o from PurchaseOrder o
             where o.seller.id = :sellerId
-              and (:status is null or o.status = :status)
-              and (:fromDate is null or o.invoiceIssuedDate >= :fromDate)
-              and (:untilDate is null or o.invoiceIssuedDate < :untilDate)
-              and (:orderId is null or lower(o.orderId) = lower(:orderId))
-              and (:invoiceId is null or lower(o.invoiceId) = lower(:invoiceId))
+              and o.status = coalesce(:status, o.status)
+              and o.invoiceIssuedDate >= :fromDate
+              and o.invoiceIssuedDate < :untilDate
+              and lower(o.orderId) = coalesce(:orderId, lower(o.orderId))
+              and lower(o.invoiceId) = coalesce(:invoiceId, lower(o.invoiceId))
             """,
             countQuery = """
             select count(o) from PurchaseOrder o
             where o.seller.id = :sellerId
-              and (:status is null or o.status = :status)
-              and (:fromDate is null or o.invoiceIssuedDate >= :fromDate)
-              and (:untilDate is null or o.invoiceIssuedDate < :untilDate)
-              and (:orderId is null or lower(o.orderId) = lower(:orderId))
-              and (:invoiceId is null or lower(o.invoiceId) = lower(:invoiceId))
+              and o.status = coalesce(:status, o.status)
+              and o.invoiceIssuedDate >= :fromDate
+              and o.invoiceIssuedDate < :untilDate
+              and lower(o.orderId) = coalesce(:orderId, lower(o.orderId))
+              and lower(o.invoiceId) = coalesce(:invoiceId, lower(o.invoiceId))
             """)
     Page<PurchaseOrder> searchForSeller(
             @Param("sellerId") UUID sellerId,

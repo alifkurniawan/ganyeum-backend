@@ -12,6 +12,7 @@ import id.reshito.backend.modules.order.model.PurchaseOrderDetail;
 import id.reshito.backend.modules.order.model.ShippingDetail;
 import id.reshito.backend.modules.order.repository.PurchaseOrderRepository;
 import id.reshito.backend.modules.shipping.ShippingService;
+import id.reshito.backend.modules.inventory.InventoryService;
 import id.reshito.backend.modules.product.ProductRepository;
 import id.reshito.backend.modules.product.model.Product;
 import id.reshito.backend.modules.user.User;
@@ -36,10 +37,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
     private static final DateTimeFormatter ID_DATE = DateTimeFormatter.ofPattern("yyMMdd").withZone(ZoneOffset.UTC);
+    private static final Instant EARLIEST_ORDER_DATE = Instant.parse("0001-01-01T00:00:00Z");
+    private static final Instant LATEST_ORDER_DATE = Instant.parse("9999-12-31T23:59:59.999999Z");
     private final UserService userService;
     private final CustomerService customerService;
     private final ProductRepository productRepository;
     private final ShippingService shippingService;
+    private final InventoryService inventoryService;
     private final PurchaseOrderRepository purchaseOrderRepository;
 
     @Transactional
@@ -120,6 +124,10 @@ public class OrderService {
         }
         details.forEach(detail -> detail.setPurchaseOrder(order));
         purchaseOrderRepository.save(order);
+        for (CreateOrderRequest.Item item : request.items()) {
+            inventoryService.decreaseInventory(
+                    products.get(item.productId()), item.quantity(), "PURCHASE_ORDER", order.getId().toString());
+        }
         return toResponse(order, subtotal);
     }
 
@@ -130,10 +138,12 @@ public class OrderService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "toDate must be on or after fromDate");
         }
         User seller = userService.findByUid(sellerUid);
-        Instant from = fromDate == null ? null : fromDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant until = toDate == null ? null : toDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant from = fromDate == null ? EARLIEST_ORDER_DATE
+                : fromDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant until = toDate == null ? LATEST_ORDER_DATE
+                : toDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
         var results = purchaseOrderRepository.searchForSeller(seller.getId(), status, from, until,
-                blankToNull(orderId), blankToNull(invoiceId),
+                normalizeIdentifier(orderId), normalizeIdentifier(invoiceId),
                 PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "invoiceIssuedDate")));
         var data = results.getContent().stream()
                 .map(order -> toResponse(order, calculateSubtotal(order)))
@@ -165,6 +175,11 @@ public class OrderService {
 
     private static String blankToNull(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private static String normalizeIdentifier(String value) {
+        String normalized = blankToNull(value);
+        return normalized == null ? null : normalized.toLowerCase(Locale.ROOT);
     }
 
     private static PurchaseOrderResponse toResponse(PurchaseOrder order, BigInteger subtotal) {

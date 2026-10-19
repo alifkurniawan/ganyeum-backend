@@ -31,10 +31,18 @@ public class CustomerService {
     }
 
     public ListResponse search(UUID sellerId, String query, int page, int size) {
+        var pageable = PageRequest.of(page - 1, size, Sort.by("id").ascending());
+        if (query == null || query.isBlank()) {
+            var result = customerRepository.findBySellerId(sellerId, pageable)
+                    .map(link -> userService.toCustomerResponse(link.getCustomer()));
+            return new ListResponse(result.getContent(), page, result.getTotalPages(), result.getTotalElements());
+        }
+
+        query = query.trim();
         String phoneQuery = userService.normalizePhoneSearchQuery(query);
         var result = customerRepository.searchBySeller(
                 sellerId, query, phoneQuery,
-                PageRequest.of(page - 1, size, Sort.by("id").ascending())
+                pageable
         ).map(link -> userService.toCustomerResponse(link.getCustomer()));
         return new ListResponse(result.getContent(), page, result.getTotalPages(), result.getTotalElements());
     }

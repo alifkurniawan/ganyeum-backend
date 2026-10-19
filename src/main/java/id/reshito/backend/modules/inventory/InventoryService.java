@@ -18,18 +18,19 @@ public class InventoryService {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
-        return this.updateInventory(product, quantity, StockMovementType.STOCK_IN);
+        return this.updateInventory(product, quantity, StockMovementType.STOCK_IN, null, null);
     }
 
     @Transactional
-    public Inventory decreaseInventory(Product product, Integer quantity) {
+    public Inventory decreaseInventory(Product product, Integer quantity, String referenceType, String referenceId) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greather than zero");
         }
-        return this.updateInventory(product, quantity*(-1), StockMovementType.SALE);
+        return this.updateInventory(product, quantity * -1, StockMovementType.SALE, referenceType, referenceId);
     }
 
-    private Inventory updateInventory(Product product, Integer quantity, StockMovementType type) {
+    private Inventory updateInventory(Product product, Integer quantity, StockMovementType type,
+                                      String referenceType, String referenceId) {
         Inventory inventory = inventoryRepository
                 .findByProductId(product.getId())
                 .orElseGet(() -> Inventory.builder()
@@ -44,6 +45,8 @@ public class InventoryService {
                 .product(product)
                 .quantity(quantity)
                 .stockMovementType(type)
+                .reverenceType(referenceType)
+                .referenceId(referenceId)
                 .build();
 
         this.stockMovementRepository.save(stockMovement);

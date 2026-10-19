@@ -4,6 +4,7 @@ import id.reshito.backend.modules.order.dto.CreateOrderRequest;
 import id.reshito.backend.modules.order.dto.PurchaseOrderResponse;
 import id.reshito.backend.modules.order.dto.UpdateOrderStatusRequest;
 import id.reshito.backend.modules.order.model.OrderStatus;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('SELLER')")
 public class OrderController {
     private final OrderService orderService;

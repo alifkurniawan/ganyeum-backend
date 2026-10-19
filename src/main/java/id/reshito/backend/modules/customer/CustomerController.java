@@ -37,10 +37,10 @@ public class CustomerController {
     @GetMapping
     public ListResponse search(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestParam @NotBlank @Size(max = 100) String query,
+            @RequestParam(required = false) @Size(max = 100) String query,
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
-        return customerService.search(userService.findByUid(jwt.getSubject()).getId(), query.trim(), page, size);
+        return customerService.search(userService.findByUid(jwt.getSubject()).getId(), query, page, size);
     }
 }

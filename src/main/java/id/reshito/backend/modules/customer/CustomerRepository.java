@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    Page<Customer> findBySellerId(UUID sellerId, Pageable pageable);
     boolean existsBySellerIdAndCustomerId(UUID sellerId, UUID customerId);
     Optional<Customer> findBySellerIdAndCustomerId(UUID sellerId, UUID customerId);
 
