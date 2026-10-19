@@ -50,7 +50,6 @@ public class JwtTokenService {
     public TokenResponse createAccessToken(String userId, List<RoleEnum> roles) {
         Instant now = Instant.now();
         var expiredAt = now.plusSeconds(this.ttlSeconds);
-        var expiredRefreshToken = now.plusSeconds(this.ttlSeconds * 5);
         var accessToken = this.generateToken(userId, expiredAt, roles);
         return new TokenResponse(
                 accessToken,

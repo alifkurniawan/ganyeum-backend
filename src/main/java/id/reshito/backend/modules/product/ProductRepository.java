@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("""
@@ -40,6 +41,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 
     Optional<Product> findByIdAndUidAndActive(UUID productId, String uid, boolean active);
+
+    List<Product> findAllByIdInAndUidAndActive(List<UUID> ids, String uid, boolean active);
 
     @Query("""
             SELECT NEW id.reshito.backend.modules.product.dto.ProductResponse(

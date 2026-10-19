@@ -26,4 +26,15 @@ public class AuthController {
         }
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/seller/exchange")
+    public ResponseEntity<TokenResponse> sellerExchangeToken(@RequestBody TokenExchangeRequest request) {
+        TokenResponse response;
+        try {
+            response = authService.sellerExchangeToken(request.idToken());
+        } catch (InvalidFirebaseTokenException e) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(response);
+    }
 }
