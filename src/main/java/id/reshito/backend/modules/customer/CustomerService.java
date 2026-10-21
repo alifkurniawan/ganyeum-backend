@@ -1,6 +1,8 @@
 package id.reshito.backend.modules.customer;
 
 import id.reshito.backend.common.dto.ListResponse;
+import id.reshito.backend.common.exception.ConflictException;
+import id.reshito.backend.common.exception.ForbiddenException;
 import id.reshito.backend.modules.user.User;
 import id.reshito.backend.modules.user.UserService;
 import id.reshito.backend.modules.customer.dto.CreateCustomerRequest;
@@ -8,10 +10,8 @@ import id.reshito.backend.modules.customer.dto.CustomerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +52,7 @@ public class CustomerService {
         if (customerId != null) {
             User customer = userService.findById(customerId);
             if (!customerRepository.existsBySellerIdAndCustomerId(seller.getId(), customer.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Customer does not belong to this seller");
+                throw new ForbiddenException("Customer does not belong to this seller");
             }
             return customer;
         }
@@ -60,7 +60,7 @@ public class CustomerService {
         String phone = userService.normalizePhoneNumber(phoneNumber);
         List<User> byPhone = userService.findAllByPhoneNumber(phone);
         if (byPhone.size() > 1) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ambiguous customer phone number");
+            throw new ConflictException("Ambiguous customer phone number");
         }
 
         User customer;
@@ -69,12 +69,12 @@ public class CustomerService {
         } else {
             List<User> byName = userService.findAllByNameIgnoreCase(name.trim());
             if (byName.size() > 1) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Ambiguous customer name");
+                throw new ConflictException("Ambiguous customer name");
             }
             if (!byName.isEmpty()) {
                 customer = byName.getFirst();
                 if (!Objects.equals(userService.normalizePhoneNumber(customer.getPhoneNumber()), phone)) {
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer name exists with a different phone number");
+                    throw new ConflictException("Customer name exists with a different phone number");
                 }
             } else {
                 customer = userService.createManualBuyer(name.trim(), phone);

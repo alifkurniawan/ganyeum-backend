@@ -5,7 +5,7 @@ import id.reshito.backend.common.dto.GetRequest;
 import id.reshito.backend.common.dto.ListResponse;
 import id.reshito.backend.common.exception.NotFoundException;
 import id.reshito.backend.common.mapper.ListMapper;
-import id.reshito.backend.modules.inventory.InventoryService;
+import id.reshito.backend.modules.inventory.StockService;
 import id.reshito.backend.modules.product.dto.ProductRequest;
 import id.reshito.backend.modules.product.dto.ProductResponse;
 import id.reshito.backend.modules.product.dto.ProductUpdateRequest;
@@ -20,12 +20,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    private final InventoryService inventoryService;
+    private final StockService stockService;
     private final ProductMapper productMapper;
     private final ListMapper listMapper;
 
@@ -39,8 +40,17 @@ public class ProductService {
                 .build();
 
         this.productRepository.save(product);
-        var inventory = this.inventoryService.addInventory(product, request.quantity());
-        return productMapper.toResponse(product, inventory.getQuantity());
+        int quantity = stockService.initializeStock(product, request.quantity());
+        return productMapper.toResponse(product, quantity);
+    }
+
+    public List<Product> findActiveProductsForSeller(String uid, List<UUID> productIds) {
+        return productRepository.findAllByIdInAndUidAndActive(productIds, uid, true);
+    }
+
+    public Product findActiveProductForSeller(String uid, UUID productId) {
+        return productRepository.findByIdAndUidAndActive(productId, uid, true)
+                .orElseThrow(NotFoundException::new);
     }
 
     public ListResponse getProducts(String uid, GetRequest request) {
@@ -63,8 +73,7 @@ public class ProductService {
         product.setInitialPrice(request.initialPrice());
         product.setSellingPrice(request.sellingPrice());
         this.productRepository.save(product);
-        var inventory = this.inventoryService.getInventory(product);
-        return productMapper.toResponse(product, inventory.getQuantity());
+        return productMapper.toResponse(product, stockService.getStock(product));
     }
 
     @Transactional

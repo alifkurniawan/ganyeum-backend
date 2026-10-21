@@ -4,6 +4,7 @@ import id.reshito.backend.modules.order.dto.CreateOrderRequest;
 import id.reshito.backend.modules.order.dto.PurchaseOrderResponse;
 import id.reshito.backend.modules.order.dto.UpdateOrderStatusRequest;
 import id.reshito.backend.modules.order.model.OrderStatus;
+import id.reshito.backend.modules.order.dto.UpdatePaymentStatusRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -45,20 +46,29 @@ public class OrderController {
         return orderService.list(jwt.getSubject(), status, fromDate, toDate, orderId, invoiceId, page, size);
     }
 
-    @GetMapping("/{orderUuid}")
+    @GetMapping("/{orderId}")
     public PurchaseOrderResponse getDetail(
             @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID orderUuid
+            @PathVariable UUID orderId
     ) {
-        return orderService.getDetail(jwt.getSubject(), orderUuid);
+        return orderService.getDetail(jwt.getSubject(), orderId);
     }
 
-    @PatchMapping("/{orderUuid}/status")
+    @PatchMapping("/{orderId}/status")
     public PurchaseOrderResponse updateStatus(
             @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID orderUuid,
+            @PathVariable UUID orderId,
             @Valid @RequestBody UpdateOrderStatusRequest request
     ) {
-        return orderService.updateStatus(jwt.getSubject(), orderUuid, request.status());
+        return orderService.updateStatus(jwt.getSubject(), orderId, request.status());
+    }
+
+    @PatchMapping("/{orderId}/payment-status")
+    public PurchaseOrderResponse updatePaymentStatus(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID orderId,
+            @Valid @RequestBody UpdatePaymentStatusRequest request
+    ) {
+        return orderService.updatePaymentStatus(jwt.getSubject(), orderId, request.status());
     }
 }

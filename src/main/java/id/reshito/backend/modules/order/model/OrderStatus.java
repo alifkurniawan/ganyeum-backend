@@ -1,11 +1,9 @@
 package id.reshito.backend.modules.order.model;
 
 public enum OrderStatus {
-    PENDING,
-    CONFIRMED,
-    PROCESSING,
-    READY_FOR_PICKUP,
-    SHIPPED,
-    COMPLETED,
+    WAITING_FOR_PACKING,
+    READY_TO_DELIVERY,
+    ON_DELIVERY,
+    FINISH,
     CANCELLED
 }

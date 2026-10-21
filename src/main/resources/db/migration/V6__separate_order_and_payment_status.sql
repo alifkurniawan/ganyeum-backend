@@ -1,0 +1,20 @@
+ALTER TABLE purchase_orders DROP CONSTRAINT ck_purchase_orders_status;
+
+UPDATE purchase_orders
+SET status = CASE status
+    WHEN 'PENDING' THEN 'WAITING_FOR_PACKING'
+    WHEN 'CONFIRMED' THEN 'WAITING_FOR_PACKING'
+    WHEN 'PROCESSING' THEN 'WAITING_FOR_PACKING'
+    WHEN 'READY_FOR_PICKUP' THEN 'READY_TO_DELIVERY'
+    WHEN 'SHIPPED' THEN 'ON_DELIVERY'
+    WHEN 'COMPLETED' THEN 'FINISH'
+    ELSE status
+END;
+
+ALTER TABLE purchase_orders
+    ALTER COLUMN status SET DEFAULT 'WAITING_FOR_PACKING',
+    ADD CONSTRAINT ck_purchase_orders_status
+        CHECK (status IN ('WAITING_FOR_PACKING', 'READY_TO_DELIVERY', 'ON_DELIVERY', 'FINISH', 'CANCELLED')),
+    ADD COLUMN payment_status VARCHAR(30) NOT NULL DEFAULT 'UNPAID',
+    ADD CONSTRAINT ck_purchase_orders_payment_status
+        CHECK (payment_status IN ('PAID', 'UNPAID', 'REFUND'));

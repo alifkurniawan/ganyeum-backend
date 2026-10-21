@@ -28,7 +28,12 @@ public class PurchaseOrder extends BaseModel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     @Builder.Default
-    private OrderStatus status = OrderStatus.PENDING;
+    private OrderStatus status = OrderStatus.WAITING_FOR_PACKING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false, length = 30)
+    @Builder.Default
+    private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seller_id", nullable = false)

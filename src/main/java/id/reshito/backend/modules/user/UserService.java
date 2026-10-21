@@ -1,6 +1,7 @@
 package id.reshito.backend.modules.user;
 
 import id.reshito.backend.common.exception.NotFoundException;
+import id.reshito.backend.common.exception.BadRequestException;
 import id.reshito.backend.common.util.PhoneNumberNormalizer;
 import id.reshito.backend.modules.customer.dto.CustomerResponse;
 import id.reshito.backend.modules.user.dto.UserEditRequest;
@@ -13,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -137,7 +136,7 @@ public class UserService {
     private static String normalizeAndValidatePhone(String phoneNumber) {
         String normalized = PhoneNumberNormalizer.normalize(phoneNumber);
         if (normalized != null && !normalized.isBlank() && !normalized.matches("[1-9][0-9]{7,15}")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new BadRequestException(
                     "Phone number must contain 8 to 16 digits including country code, without a plus sign");
         }
         return normalized;

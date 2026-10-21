@@ -5,11 +5,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import id.reshito.backend.modules.order.model.OrderStatus;
+import id.reshito.backend.modules.order.model.PaymentStatus;
 
 public record PurchaseOrderResponse(
         UUID id,
         String orderId,
         OrderStatus status,
+        PaymentStatus paymentStatus,
         UUID customerId,
         String customerName,
         String customerPhoneNumber,
